@@ -9,62 +9,76 @@ const port = process.env.PORT || 8081;
 
 app.use(express.json());
 
-app.post('/users', (req, res) => {
-	const user = new User(req.body);
+app.post('/users', async (req, res) => {
+	try {
+		const user = new User(req.body);
 
-	user.save().then(() => {
+		await user.save();
+
 		res.status(201).send(user);
-	}).catch((err) => {
-		res.status(400).send({ err: err.message });
-	});
+	} catch (e) {
+		res.status(400).send({ err: e.message });
+	}
 });
 
-app.get('/users', (req, res) => {
-	User.find({}).then((users) => {
+app.get('/users', async (req, res) => {
+	try {
+		const users = await User.find({});
+
 		res.status(200).send(users);
-	}).catch((err) => {
-		res.status(500).send({ err: err.message });
-	});
+	} catch (e) {
+		res.status(500).send({ err: e.message });
+	}
 });
 
-app.get('/users/:id', (req, res) => {
-	User.findById(req.params.id).then((user) => {
+app.get('/users/:id', async (req, res) => {
+	try {
+		const user = await User.findById(req.params.id);
+
 		if (!user) {
 			res.status(404).send({ msg: 'User not found' });
 		}
+
 		res.status(200).send(user);
-	}).catch((err) => {
-		res.status(500).send({ err: err.message });
-	});
+	} catch (e) {
+		res.status(500).send({ err: e.message });
+	}
 });
 
-app.post('/tasks', (req, res) => {
-	const task = new Task(req.body);
+app.post('/tasks', async (req, res) => {
+	try {
+		const task = new Task(req.body);
 
-	task.save().then(() => {
+		await task.save();
+
 		res.status(201).send(task);
-	}).catch((err) => {
-		res.status(400).send({ err: err.message });
-	});
+	} catch (e) {
+		res.status(400).send({ err: e.message });
+	}
 });
 
-app.get('/tasks', (req, res) => {
-	Task.find({}).then((tasks) => {
+app.get('/tasks', async (req, res) => {
+	try {
+		const tasks = await Task.find({});
+
 		res.status(200).send(tasks);
-	}).catch((err) => {
-		res.status(500).send({ err: err.message });
-	});
+	} catch (e) {
+		res.status(500).send({ err: e.message });
+	}
 });
 
-app.get('/tasks/:id', (req, res) => {
-	Task.findById(req.params.id).then((task) => {
+app.get('/tasks/:id', async (req, res) => {
+	try {
+		const task = await Task.findById(req.params.id);
+
 		if (!task) {
 			res.status(404).send({ msg: 'Task not found' });
 		}
+
 		res.status(200).send(task);
-	}).catch((err) => {
-		res.status(500).send({ err: err.message });
-	});
+	} catch (e) {
+		res.status(500).send({ err: e.message });
+	}
 });
 
 app.listen(port, () => {
