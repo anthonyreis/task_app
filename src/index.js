@@ -67,6 +67,20 @@ app.patch('/users/:id', async (req, res) => {
 	}
 });
 
+app.delete('/users/:id', async (req, res) => {
+	try {
+		const user = await User.findByIdAndDelete(req.params.id);
+
+		if (!user) {
+			res.status(404).send({ msg: 'User not found' });
+		}
+
+		res.status(200).send(user);
+	} catch (e) {
+		res.status(500).send({ err: e.message });
+	}
+});
+
 app.post('/tasks', async (req, res) => {
 	try {
 		const task = new Task(req.body);
@@ -117,6 +131,20 @@ app.patch('/tasks/:id', async (req, res) => {
 
 		if (!task) {
 			res.status(404).send({ msg: 'Task not found' });
+		}
+
+		res.status(200).send(task);
+	} catch (e) {
+		res.status(500).send({ err: e.message });
+	}
+});
+
+app.delete('/tasks/:id', async (req, res) => {
+	try {
+		const task = await Task.findByIdAndDelete(req.params.id);
+
+		if (!task) {
+			res.status(404).send({ msg : 'Task not found'});
 		}
 
 		res.status(200).send(task);
