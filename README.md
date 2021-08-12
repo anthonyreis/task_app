@@ -1,14 +1,14 @@
 # taskApp
 
-# Aplicação de criação de Tasks
+# Aplicação para criação de Tasks
 
 # Tecnologias Utilizadas no desenvolvimento
-- [NodeJS](nodejs.org)
-- [MongoDB](www.mongodb.com)
-- [Mongoose](mongoosejs.com)
-- [Express](expressjs.com)
-- [JWT](www.npmjs.com/package/jsonwebtoken)
-- [Multer](www.npmjs.com/package/multer)
+- [NodeJS](https://nodejs.org)
+- [MongoDB](https://www.mongodb.com)
+- [Mongoose](https://mongoosejs.com)
+- [Express](https://expressjs.com)
+- [JWT](https://www.npmjs.com/package/jsonwebtoken)
+- [Multer](https://www.npmjs.com/package/multer)
 
 # Funcionamento
 
