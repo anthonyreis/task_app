@@ -7,6 +7,8 @@
 - [MongoDB](www.mongodb.com)
 - [Mongoose](mongoosejs.com)
 - [Express](expressjs.com)
+- [JWT](www.npmjs.com/package/jsonwebtoken)
+- [Multer](www.npmjs.com/package/multer)
 
 # Funcionamento
 
