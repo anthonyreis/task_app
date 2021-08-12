@@ -1,6 +1,5 @@
 const express = require('express');
-const env = process.argv[2].split(':')[1];
-require('dotenv').config({ path: `src/config/${env}.env` });
+require('dotenv').config({ path: 'src/config/dev.env' });
 require('./db/mongoose');
 const userRouter = require('./routers/user');
 const taskRouter = require('./routers/task');
