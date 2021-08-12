@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
@@ -47,7 +48,10 @@ const userSchema = new mongoose.Schema({
 			type: String,
 			required: true
 		}
-	}]
+	}],
+	avatar: {
+		type: Buffer
+	}
 }, {
 	timestamps: true
 });
@@ -63,12 +67,13 @@ userSchema.methods.toJSON = function () {
 
 	delete userObject.password;
 	delete userObject.tokens;
+	delete userObject.avatar;
 
 	return userObject;
 };
 
 userSchema.methods.generateAuthToken = async function () {
-	const token = jwt.sign({ _id: this._id.toString() }, 'anthonyreis');
+	const token = jwt.sign({ _id: this._id.toString() }, process.env.JWT_SECRET);
 
 	this.tokens = this.tokens.concat({ token });
 	await this.save();
