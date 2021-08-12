@@ -1,7 +1,23 @@
+/* eslint-disable no-unused-vars */
 const express = require('express');
+const multer = require('multer');
 const User = require('../models/user');
 const auth = require('../middleware/auth');
 const router = new express.Router();
+
+const upload = multer({
+	dest: 'avatars',
+	limits: {
+		fileSize: 1000000
+	},
+	fileFilter(req, file, cb) {
+		if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+			cb(new Error('Please upload an image (jpg, jpeg or png)'));
+		}
+
+		cb(undefined, true);
+	}
+});
 
 router.post('/users', async (req, res) => {
 	try {
@@ -99,6 +115,12 @@ router.delete('/users/me', auth, async (req, res) => {
 	} catch (e) {
 		res.status(500).send({ err: e.message });
 	}
+});
+
+router.post('/users/me/avatar', upload.single('avatar'), (req, res) => {
+	res.send();
+}, (error, req, res, next) => {
+	res.status(400).send(error.message);
 });
 
 module.exports = router;
