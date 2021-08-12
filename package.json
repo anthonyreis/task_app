@@ -19,8 +19,8 @@
     "nodemon": "^2.0.12"
   },
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "npx nodemon src/index.js"
+    "start": "node src/index.js stage:prod",
+    "dev": "npx nodemon src/index.js stage:dev"
   },
   "keywords": [],
   "author": "",
