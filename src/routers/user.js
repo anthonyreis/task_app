@@ -8,155 +8,155 @@ const { sendWelcomeEmail, sendCancelationEmail } = require('../emails/account');
 const router = new express.Router();
 
 const upload = multer({
-	limits: {
-		fileSize: 1000000
-	},
-	fileFilter(req, file, cb) {
-		if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
-			cb(new Error('Please upload an image (jpg, jpeg or png)'));
-		}
+    limits: {
+        fileSize: 1000000
+    },
+    fileFilter(req, file, cb) {
+        if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+            cb(new Error('Please upload an image (jpg, jpeg or png)'));
+        }
 
-		cb(undefined, true);
-	}
+        cb(undefined, true);
+    }
 });
 
 router.post('/users', async (req, res) => {
-	try {
-		const user = new User(req.body);
+    try {
+        const user = new User(req.body);
 
-		await user.save();
+        await user.save();
 
-		sendWelcomeEmail(user.email, user.name);
+        sendWelcomeEmail(user.email, user.name);
 
-		const token = await user.generateAuthToken();
+        const token = await user.generateAuthToken();
 
-		res.status(201).send({ user, token });
-	} catch (e) {
-		res.status(400).send({ err: e.message });
-	}
+        res.status(201).send({ user, token });
+    } catch (e) {
+        res.status(400).send({ err: e.message });
+    }
 });
 
 router.post('/users/login', async (req, res) => {
-	try {
-		const user = await User.findByCredentials(req.body.email, req.body.password);
+    try {
+        const user = await User.findByCredentials(req.body.email, req.body.password);
 
-		const token = await user.generateAuthToken();
+        const token = await user.generateAuthToken();
 
-		res.status(200).send({ user, token });
-	} catch (e) {
-		res.status(400).send({ err: e.message });
-	}
+        res.status(200).send({ user, token });
+    } catch (e) {
+        res.status(400).send({ err: e.message });
+    }
 });
 
-router.get('/users/me', auth, async (req, res) => {
-	res.send(req.user);
+router.get('/users/me', auth, (req, res) => {
+    res.send(req.user);
 });
 
 router.post('/users/logout', auth, async(req, res) => {
-	try {
-		req.user.tokens = req.user.tokens.filter((token) => token.token != req.token);
+    try {
+        req.user.tokens = req.user.tokens.filter((token) => token.token != req.token);
 
-		await req.user.save();
+        await req.user.save();
 
-		res.status(200).send();
-	} catch (e) {
-		res.status(500).send({ err: e.message });
-	}
+        res.status(200).send();
+    } catch (e) {
+        res.status(500).send({ err: e.message });
+    }
 });
 
 router.post('/users/logoutAll', auth, async (req, res) => {
-	try {
-		req.user.tokens = [];
+    try {
+        req.user.tokens = [];
 
-		await req.user.save();
+        await req.user.save();
 
-		res.status(200).send();
-	} catch (e) {
-		res.status(500).send({ err: e.message });
-	}
+        res.status(200).send();
+    } catch (e) {
+        res.status(500).send({ err: e.message });
+    }
 });
 
 router.get('/users/:id', async (req, res) => {
-	try {
-		const user = await User.findById(req.params.id);
+    try {
+        const user = await User.findById(req.params.id);
 
-		if (!user) {
-			res.status(404).send({ msg: 'User not found' });
-		}
+        if (!user) {
+            res.status(404).send({ msg: 'User not found' });
+        }
 
-		res.status(200).send(user);
-	} catch (e) {
-		res.status(500).send({ err: e.message });
-	}
+        res.status(200).send(user);
+    } catch (e) {
+        res.status(500).send({ err: e.message });
+    }
 });
 
 router.patch('/users/me', auth, async (req, res) => {
-	const updates = Object.keys(req.body);
-	const allowedUpdates = ['name', 'email', 'password', 'age'];
-	const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
+    const updates = Object.keys(req.body);
+    const allowedUpdates = ['name', 'email', 'password', 'age'];
+    const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
 
-	if (!isValidOperation) {
-		res.status(400).send({ err: 'Invalid updates' });
-	}
+    if (!isValidOperation) {
+        res.status(400).send({ err: 'Invalid updates' });
+    }
 
-	try {
-		updates.forEach((update) => req.user[update] = req.body[update]);
+    try {
+        updates.forEach((update) => req.user[update] = req.body[update]);
 
-		await req.user.save();
+        await req.user.save();
 
-		res.status(200).send(req.user);
-	} catch (e) {
-		res.status(400).send({ err: e.message });
-	}
+        res.status(200).send(req.user);
+    } catch (e) {
+        res.status(400).send({ err: e.message });
+    }
 });
 
 router.delete('/users/me', auth, async (req, res) => {
-	try {
-		await req.user.remove();
+    try {
+        await req.user.remove();
 
-		sendCancelationEmail(req.user.email, req.user.name);
+        sendCancelationEmail(req.user.email, req.user.name);
 
-		res.status(200).send();
-	} catch (e) {
-		res.status(500).send({ err: e.message });
-	}
+        res.status(200).send();
+    } catch (e) {
+        res.status(500).send({ err: e.message });
+    }
 });
 
 router.post('/users/me/avatar', auth, upload.single('avatar'), async (req, res) => {
-	const buffer = await sharp(req.file.buffer).resize({ width: 250, height: 250 }).png().toBuffer();
+    const buffer = await sharp(req.file.buffer).resize({ width: 250, height: 250 }).png().toBuffer();
 	
-	req.user.avatar = buffer;
-	await req.user.save();
+    req.user.avatar = buffer;
+    await req.user.save();
 
-	res.send();
+    res.send();
 }, (error, req, res, next) => {
-	res.status(400).send(error.message);
+    res.status(400).send(error.message);
 });
 
 router.delete('/users/me/avatar', auth, async (req, res) => {
-	try {
-		req.user.avatar = undefined;
-		await req.user.save();
+    try {
+        req.user.avatar = undefined;
+        await req.user.save();
 
-		res.send();
-	} catch (e) {
-		res.status(500).send({ err: e.message });
-	}
+        res.send();
+    } catch (e) {
+        res.status(500).send({ err: e.message });
+    }
 });
 
 router.get('/users/:id/avatar', auth, async (req, res) => {
-	try {
-		const user = await User.findById(req.params.id);
+    try {
+        const user = await User.findById(req.params.id);
 
-		if (!user || !user.avatar) {
-			throw new Error();
-		}
+        if (!user || !user.avatar) {
+            throw new Error();
+        }
 
-		res.set('Content-Type', 'image/png');
-		res.status(200).send(user.avatar);
-	} catch (e) {
-		res.status(404).send();
-	}
+        res.set('Content-Type', 'image/png');
+        res.status(200).send(user.avatar);
+    } catch (e) {
+        res.status(404).send();
+    }
 });
 
 module.exports = router;
